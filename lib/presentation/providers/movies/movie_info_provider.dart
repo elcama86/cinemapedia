@@ -11,10 +11,19 @@ final movieInfoProvider =
   );
 });
 
+/*
+  {
+    "1": Movie(),
+    "2": Movie(),
+    "3": Movie(),
+  }
+*/
+
 typedef GetMovieCallback = Future<Movie> Function(String movieId);
 
 class MovieMapNotifier extends StateNotifier<Map<String, Movie>> {
   final GetMovieCallback getMovie;
+  
   MovieMapNotifier({
     required this.getMovie,
   }) : super({});
