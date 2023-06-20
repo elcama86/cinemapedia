@@ -29,7 +29,7 @@ class MovieMapper {
         backdropPath: movieDetails.backdropPath != ""
             ? "https://image.tmdb.org/t/p/w500${movieDetails.backdropPath}"
             : "https://sd.keepcalms.com/i/keep-calm-poster-not-found.png",
-        genreIds: movieDetails.genres.map((g) => g.id.toString()).toList(),
+        genreIds: movieDetails.genres.map((g) => g.name.toString()).toList(),
         id: movieDetails.id,
         originalLanguage: movieDetails.originalLanguage,
         originalTitle: movieDetails.originalTitle,
