@@ -10,4 +10,8 @@ class HumanFormats {
 
     return formatterNumber;
   }
+
+  static String year(DateTime date) {
+    return date.year.toString();
+  }
 }

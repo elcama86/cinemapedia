@@ -4,6 +4,7 @@ import 'package:animate_do/animate_do.dart';
 import 'package:cinemapedia/domain/entities/movie.dart';
 import 'package:cinemapedia/presentation/providers/providers.dart';
 import 'package:cinemapedia/presentation/providers/movies/movie_info_provider.dart';
+import 'package:cinemapedia/config/helpers/human_format.dart';
 
 class MovieScreen extends ConsumerStatefulWidget {
   static const String name = "movie-screen";
@@ -99,11 +100,22 @@ class _MovieDetails extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      movie.title,
+                    RichText(
                       textAlign: TextAlign.justify,
-                      style: textStyles.titleLarge
-                          ?.copyWith(fontWeight: FontWeight.bold),
+                      text: TextSpan(
+                        style: textStyles.titleLarge,
+                        children: [
+                          TextSpan(
+                            text: movie.title,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          TextSpan(
+                            text: " (${HumanFormats.year(movie.releaseDate)})",
+                          ),
+                        ],
+                      ),
                     ),
                     Text(
                       movie.overview,
