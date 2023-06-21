@@ -103,7 +103,7 @@ class _MovieDetails extends StatelessWidget {
                     RichText(
                       textAlign: TextAlign.justify,
                       text: TextSpan(
-                        style: textStyles.titleLarge,
+                        style: textStyles.titleMedium,
                         children: [
                           TextSpan(
                             text: movie.title,
@@ -170,8 +170,10 @@ class _ActorsByMovie extends ConsumerWidget {
     final actorsByMovie = ref.watch(actorsByMovieProvider);
 
     if (actorsByMovie[movieId] == null) {
-      return const CircularProgressIndicator(
-        strokeWidth: 2,
+      return const Center(
+        child: CircularProgressIndicator(
+          strokeWidth: 2,
+        ),
       );
     }
 
