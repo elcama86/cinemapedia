@@ -6,6 +6,8 @@ import 'package:cinemapedia/presentation/views/views.dart';
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorMovieKey =
     GlobalKey<NavigatorState>(debugLabel: 'shellMovie');
+final _shellNavigatorCategoriesKey =
+    GlobalKey<NavigatorState>(debugLabel: 'shellCategories');
 final _shellNavigatorFavoritesKey =
     GlobalKey<NavigatorState>(debugLabel: 'shellFavorites');
 
@@ -40,6 +42,15 @@ final appRouter = GoRouter(
                   },
                 ),
               ],
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          navigatorKey: _shellNavigatorCategoriesKey,
+          routes: [
+            GoRoute(
+              path: '/categories',
+              builder: (context, state) => const SizedBox(),
             ),
           ],
         ),

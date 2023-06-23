@@ -12,11 +12,21 @@ class HomeScreen extends StatelessWidget {
     required this.navigationShell,
   });
 
+  void _goBranch(int index) {
+    navigationShell.goBranch(
+      index,
+      initialLocation: index == navigationShell.currentIndex,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: navigationShell,
-      bottomNavigationBar: const CustomBottomNavigation(),
+      bottomNavigationBar: CustomBottomNavigation(
+        currentIndex: navigationShell.currentIndex,
+        onItemTapped: _goBranch,
+      ),
     );
   }
 }
