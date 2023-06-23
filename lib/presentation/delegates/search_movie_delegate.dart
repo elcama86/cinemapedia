@@ -146,7 +146,9 @@ class _MovieItem extends StatelessWidget {
                 child: Image.network(
                   movie.posterPath,
                   loadingBuilder: (context, child, loadingProgress) {
-                    return FadeIn(child: child);
+                    return FadeIn(
+                      child: child,
+                    );
                   },
                 ),
               ),
