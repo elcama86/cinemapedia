@@ -27,6 +27,7 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
     _debounceTimer = Timer(const Duration(milliseconds: 500), () async {
       final movies = await searchMovies(query);
       initialMovies = movies;
+      if (debouncedMovies.isClosed && isLoadingStream.isClosed) return;
       debouncedMovies.add(movies);
       isLoadingStream.add(false);
     });
@@ -83,7 +84,10 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
           return FadeIn(
             animate: query.isNotEmpty,
             child: IconButton(
-              onPressed: () => query = "",
+              onPressed: () {
+                query = "";
+                _onQueryChanged(query);
+              },
               icon: const Icon(Icons.clear),
             ),
           );
