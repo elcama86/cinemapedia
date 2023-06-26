@@ -14,4 +14,9 @@ class HumanFormats {
   static String year(DateTime date) {
     return date.year.toString();
   }
+
+  static String shortDate(DateTime date) {
+    final format = DateFormat.yMMMEd('es');
+    return format.format(date);
+  }
 }
