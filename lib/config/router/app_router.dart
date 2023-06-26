@@ -27,7 +27,10 @@ final appRouter = GoRouter(
           routes: [
             GoRoute(
               path: '/',
-              builder: (context, state) => const HomeView(),
+              pageBuilder: (context, state) => transitionAnimationPage(
+                key: state.pageKey,
+                child: const HomeView(),
+              ),
               routes: [
                 GoRoute(
                   path: 'movie/:id',
@@ -49,8 +52,11 @@ final appRouter = GoRouter(
           navigatorKey: _shellNavigatorCategoriesKey,
           routes: [
             GoRoute(
-              path: '/categories',
-              builder: (context, state) => const SizedBox(),
+              path: '/popular',
+              pageBuilder: (context, state) => transitionAnimationPage(
+                key: state.pageKey,
+                child: const PopularView(),
+              ),
             ),
           ],
         ),
@@ -59,7 +65,10 @@ final appRouter = GoRouter(
           routes: [
             GoRoute(
               path: '/favorites',
-              builder: (context, state) => const FavoritesView(),
+              pageBuilder: (context, state) => transitionAnimationPage(
+                key: state.pageKey,
+                child: const FavoritesView(),
+              ),
             ),
           ],
         ),
@@ -89,3 +98,20 @@ final appRouter = GoRouter(
     // ),
   ],
 );
+
+CustomTransitionPage<void> transitionAnimationPage({
+  required LocalKey key,
+  required Widget child,
+  Duration duration = const Duration(milliseconds: 250),
+}) {
+  return CustomTransitionPage<void>(
+    key: key,
+    child: child,
+    transitionDuration: duration,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+        FadeTransition(
+      opacity: CurveTween(curve: Curves.easeInOut).animate(animation),
+      child: child,
+    ),
+  );
+}
