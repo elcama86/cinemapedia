@@ -4,6 +4,7 @@ import 'package:animate_do/animate_do.dart';
 import 'package:cinemapedia/domain/entities/movie.dart';
 import 'package:cinemapedia/presentation/providers/providers.dart';
 import 'package:cinemapedia/config/helpers/human_format.dart';
+import 'package:cinemapedia/presentation/widgets/widgets.dart';
 
 class MovieScreen extends ConsumerStatefulWidget {
   static const String name = "movie-screen";
@@ -77,155 +78,145 @@ class _MovieDetails extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Imagen
-              ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: Image.network(
-                  movie.posterPath,
-                  width: size.width * 0.3,
-                ),
-              ),
-              const SizedBox(
-                width: 10.0,
-              ),
-              // Descripción
-              SizedBox(
-                width: (size.width - 40) * 0.7,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    RichText(
-                      textAlign: TextAlign.justify,
-                      text: TextSpan(
-                        style: textStyles.titleMedium,
-                        children: [
-                          TextSpan(
-                            text: movie.title,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          TextSpan(
-                            text: " (${HumanFormats.year(movie.releaseDate)})",
-                          ),
-                        ],
-                      ),
-                    ),
-                    Text(
-                      movie.overview,
-                      textAlign: TextAlign.justify,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+        //* Título, Overview y Rating
+        _TitleAndOverview(movie: movie, size: size, textStyles: textStyles),
+
+        //* Generos de la película
+        _Genres(
+          movie: movie,
         ),
-        // Generos de la película
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Wrap(
-            children: [
-              ...movie.genreIds.map(
-                (genre) => Container(
-                  margin: const EdgeInsets.only(right: 10.0),
-                  child: Chip(
-                    label: Text(genre),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        // Actores
-        _ActorsByMovie(
+        //* Actores de la película
+        ActorsByMovie(
           movieId: movie.id.toString(),
         ),
-        const SizedBox(
-          height: 50,
+        //* Videos de la película (si tiene)
+        VideosFromMovie(
+          movieId: movie.id,
+        ),
+        //* Películas similares
+        SimilarMovies(
+          movieId: movie.id,
         ),
       ],
     );
   }
 }
 
-class _ActorsByMovie extends ConsumerWidget {
-  final String movieId;
+class _Genres extends StatelessWidget {
+  const _Genres({
+    required this.movie,
+  });
 
-  const _ActorsByMovie({
-    required this.movieId,
+  final Movie movie;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: SizedBox(
+        width: double.infinity,
+        child: Wrap(
+          crossAxisAlignment: WrapCrossAlignment.center,
+          alignment: WrapAlignment.center,
+          children: [
+            ...movie.genreIds.map(
+              (genre) => Container(
+                margin: const EdgeInsets.only(right: 10.0),
+                child: Chip(
+                  label: Text(genre),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _TitleAndOverview extends StatelessWidget {
+  final Movie movie;
+  final Size size;
+  final TextTheme textStyles;
+
+  const _TitleAndOverview({
+    required this.movie,
+    required this.size,
+    required this.textStyles,
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final actorsByMovie = ref.watch(actorsByMovieProvider);
-
-    if (actorsByMovie[movieId] == null) {
-      return const Center(
-        child: CircularProgressIndicator(
-          strokeWidth: 2,
-        ),
-      );
-    }
-
-    final actors = actorsByMovie[movieId]!;
-
-    return SizedBox(
-      height: 300.0,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: actors.length,
-        itemBuilder: (context, index) {
-          final actor = actors[index];
-          return Container(
-            padding: const EdgeInsets.all(8.0),
-            width: 135.0,
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 15.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Imagen
+          ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: Image.network(
+              movie.posterPath,
+              width: size.width * 0.3,
+            ),
+          ),
+          const SizedBox(
+            width: 10.0,
+          ),
+          // Descripción
+          SizedBox(
+            width: (size.width - 40) * 0.7,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Foto de perfil
-                FadeInRight(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(20.0),
-                    child: Image.network(
-                      actor.profilePath,
-                      height: 180.0,
-                      width: 135.0,
-                      fit: BoxFit.cover,
-                    ),
+                RichText(
+                  textAlign: TextAlign.justify,
+                  text: TextSpan(
+                    style: textStyles.titleMedium,
+                    children: [
+                      TextSpan(
+                        text: movie.title,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      TextSpan(
+                        text: " (${HumanFormats.year(movie.releaseDate)})",
+                      ),
+                    ],
                   ),
+                ),
+                Text(
+                  movie.overview,
+                  textAlign: TextAlign.justify,
                 ),
                 const SizedBox(
-                  height: 5.0,
+                  height: 10.0,
                 ),
-                // Nombre
-                Text(
-                  actor.name,
-                  maxLines: 2,
-                  textAlign: TextAlign.justify,
+                MovieRating(
+                  voteAverage: movie.voteAverage,
                 ),
-                // Personaje
-                Text(
-                  actor.character ?? "",
-                  maxLines: 2,
-                  textAlign: TextAlign.justify,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                Row(
+                  children: [
+                    const Text(
+                      'Estreno:',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(width: 5),
+                    Text(
+                      HumanFormats.shortDate(movie.releaseDate),
+                    ),
+                  ],
                 ),
               ],
             ),
-          );
-        },
+          ),
+        ],
       ),
     );
   }
@@ -248,8 +239,8 @@ class _CustomSliverAppBar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isFavoriteFuture = ref.watch(isFavoriteProvider(movie.id));
-
     final size = MediaQuery.of(context).size;
+    final scaffoldBackgroundColor = Theme.of(context).scaffoldBackgroundColor;
 
     return SliverAppBar(
       backgroundColor: Colors.black,
@@ -259,7 +250,9 @@ class _CustomSliverAppBar extends ConsumerWidget {
         IconButton(
           onPressed: () async {
             // await ref.read(localStorageRepositoryProvider).toggleFavorite(movie);
-            await ref.read(favoritesMoviesProvider.notifier).toggleFavorite(movie);
+            await ref
+                .read(favoritesMoviesProvider.notifier)
+                .toggleFavorite(movie);
             ref.invalidate(isFavoriteProvider(movie.id));
           },
           icon: isFavoriteFuture.when(
@@ -279,9 +272,14 @@ class _CustomSliverAppBar extends ConsumerWidget {
         ),
       ],
       flexibleSpace: FlexibleSpaceBar(
-        titlePadding: const EdgeInsets.symmetric(
-          horizontal: 10.0,
-          vertical: 5.0,
+        titlePadding: const EdgeInsets.only(
+          bottom: 0.0,
+        ),
+        title: _CustomGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          stops: const [0.7, 1.0],
+          colors: [Colors.transparent, scaffoldBackgroundColor],
         ),
         background: Stack(
           children: [
@@ -297,6 +295,7 @@ class _CustomSliverAppBar extends ConsumerWidget {
                 },
               ),
             ),
+            //* Favorite Gradient Background
             const _CustomGradient(
               begin: Alignment.topRight,
               end: Alignment.bottomLeft,
@@ -306,15 +305,7 @@ class _CustomSliverAppBar extends ConsumerWidget {
                 Colors.transparent,
               ],
             ),
-            const _CustomGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              stops: [0.8, 1.0],
-              colors: [
-                Colors.transparent,
-                Colors.black54,
-              ],
-            ),
+            //* Back Arrow Background
             const _CustomGradient(
               begin: Alignment.topLeft,
               stops: [0.0, 0.3],
