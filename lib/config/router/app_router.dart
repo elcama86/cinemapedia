@@ -102,16 +102,24 @@ final appRouter = GoRouter(
 CustomTransitionPage<void> transitionAnimationPage({
   required LocalKey key,
   required Widget child,
-  Duration duration = const Duration(milliseconds: 250),
+  Duration duration = const Duration(milliseconds: 500),
 }) {
   return CustomTransitionPage<void>(
-    key: key,
-    child: child,
-    transitionDuration: duration,
-    transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-        FadeTransition(
-      opacity: CurveTween(curve: Curves.easeInOut).animate(animation),
+      key: key,
       child: child,
-    ),
-  );
+      transitionDuration: duration,
+      reverseTransitionDuration: duration,
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        const begin = Offset(1.0, 0.0);
+        const end = Offset.zero;
+        const curve = Curves.ease;
+
+        var tween =
+            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+        return SlideTransition(
+          position: animation.drive(tween),
+          child: child,
+        );
+      });
 }
