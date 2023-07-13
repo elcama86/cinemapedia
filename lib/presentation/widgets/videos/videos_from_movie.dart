@@ -76,6 +76,9 @@ class _VideoList extends StatelessWidget {
         //       ),
         //     )
         //     .toList()
+        const SizedBox(
+          height: 20.0,
+        ),
       ],
     );
   }
