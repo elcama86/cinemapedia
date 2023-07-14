@@ -4,24 +4,24 @@ import 'package:animate_do/animate_do.dart';
 import 'package:cinemapedia/domain/entities/movie.dart';
 import 'package:cinemapedia/config/helpers/human_format.dart';
 
-typedef SearchMoviesCallback = Future<List<Movie>> Function(String query);
+typedef SearchMoviesCallback = Future<List<Movie>?> Function(String query);
 
 class SearchMovieDelegate extends SearchDelegate<Movie?> {
   final SearchMoviesCallback searchMovies;
-  List<Movie> initialMovies;
+  List<Movie>? initialMovies;
 
   SearchMovieDelegate({
     required this.searchMovies,
     required this.initialMovies,
   });
 
-  StreamController<List<Movie>> debouncedMovies = StreamController.broadcast();
+  StreamController<List<Movie>?> debouncedMovies = StreamController.broadcast();
   StreamController<bool> isLoadingStream = StreamController.broadcast();
 
   Timer? _debounceTimer;
 
   void _onQueryChanged(String query) {
-    isLoadingStream.add(true);
+    if (query.isNotEmpty) isLoadingStream.add(true);
     if (_debounceTimer?.isActive ?? false) _debounceTimer!.cancel();
 
     _debounceTimer = Timer(const Duration(milliseconds: 500), () async {
@@ -43,7 +43,45 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
       initialData: initialMovies,
       stream: debouncedMovies.stream,
       builder: (context, snapshot) {
-        final movies = snapshot.data ?? [];
+        if (snapshot.data == null) {
+          final colors = Theme.of(context).colorScheme;
+          final textTheme = Theme.of(context).textTheme;
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.report,
+                    color: colors.primary,
+                    size: 24.0,
+                  ),
+                  const SizedBox(
+                    height: 10.0,
+                  ),
+                  RichText(
+                    textAlign: TextAlign.center,
+                    text: TextSpan(
+                      text: 'No se encontraron películas con el título ',
+                      style: textTheme.bodyMedium,
+                      children: [
+                        TextSpan(
+                          text: query,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
+        final movies = snapshot.data!;
 
         return ListView.builder(
           itemCount: movies.length,
