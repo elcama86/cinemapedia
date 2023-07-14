@@ -3,13 +3,9 @@ import 'package:go_router/go_router.dart';
 import 'package:cinemapedia/presentation/screens/screens.dart';
 import 'package:cinemapedia/presentation/views/views.dart';
 
-final _rootNavigatorKey = GlobalKey<NavigatorState>();
+final _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 final _shellNavigatorMovieKey =
     GlobalKey<NavigatorState>(debugLabel: 'shellMovie');
-final _shellNavigatorCategoriesKey =
-    GlobalKey<NavigatorState>(debugLabel: 'shellCategories');
-final _shellNavigatorFavoritesKey =
-    GlobalKey<NavigatorState>(debugLabel: 'shellFavorites');
 
 final appRouter = GoRouter(
   initialLocation: "/",
@@ -27,20 +23,20 @@ final appRouter = GoRouter(
           routes: [
             GoRoute(
               path: '/',
-              pageBuilder: (context, state) => transitionAnimationPage(
-                key: state.pageKey,
-                child: const HomeView(),
-              ),
+              builder: (context, state) => const HomeView(),
               routes: [
                 GoRoute(
                   path: 'movie/:id',
                   parentNavigatorKey: _rootNavigatorKey,
                   name: MovieScreen.name,
-                  builder: (context, state) {
+                  pageBuilder: (context, state) {
                     final movieId = state.pathParameters['id'] ?? 'no-id';
 
-                    return MovieScreen(
-                      movieId: movieId,
+                    return transitionAnimationPage(
+                      key: state.pageKey,
+                      child: MovieScreen(
+                        movieId: movieId,
+                      ),
                     );
                   },
                 ),
@@ -49,26 +45,18 @@ final appRouter = GoRouter(
           ],
         ),
         StatefulShellBranch(
-          navigatorKey: _shellNavigatorCategoriesKey,
           routes: [
             GoRoute(
               path: '/popular',
-              pageBuilder: (context, state) => transitionAnimationPage(
-                key: state.pageKey,
-                child: const PopularView(),
-              ),
+              builder: (context, state) => const PopularView(),
             ),
           ],
         ),
         StatefulShellBranch(
-          navigatorKey: _shellNavigatorFavoritesKey,
           routes: [
             GoRoute(
               path: '/favorites',
-              pageBuilder: (context, state) => transitionAnimationPage(
-                key: state.pageKey,
-                child: const FavoritesView(),
-              ),
+              builder: (context, state) => const FavoritesView(),
             ),
           ],
         ),
@@ -102,23 +90,13 @@ final appRouter = GoRouter(
 CustomTransitionPage<void> transitionAnimationPage({
   required LocalKey key,
   required Widget child,
-  Duration duration = const Duration(milliseconds: 500),
 }) {
   return CustomTransitionPage<void>(
       key: key,
       child: child,
-      transitionDuration: duration,
-      reverseTransitionDuration: duration,
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        const begin = Offset(1.0, 0.0);
-        const end = Offset.zero;
-        const curve = Curves.ease;
-
-        var tween =
-            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-
-        return SlideTransition(
-          position: animation.drive(tween),
+        return FadeTransition(
+          opacity: CurveTween(curve: Curves.easeInOut).animate(animation),
           child: child,
         );
       });
