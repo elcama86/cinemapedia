@@ -55,7 +55,7 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
                   Icon(
                     Icons.report,
                     color: colors.primary,
-                    size: 24.0,
+                    size: 60.0,
                   ),
                   const SizedBox(
                     height: 10.0,
