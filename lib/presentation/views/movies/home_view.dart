@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cinemapedia/domain/entities/movie.dart';
 import 'package:cinemapedia/presentation/providers/providers.dart';
@@ -24,6 +25,7 @@ class HomeViewState extends ConsumerState<HomeView> {
   @override
   Widget build(BuildContext context) {
     final bool initialLoading = ref.watch(initialLoadingProvider);
+    FlutterNativeSplash.remove();
 
     if (initialLoading) return const FullScreenLoader();
 
@@ -65,7 +67,7 @@ class HomeViewState extends ConsumerState<HomeView> {
                         .read(upcomingMoviesProvider.notifier)
                         .loadNextPage(),
                   ),
-                  //* Ya no estará aquí, ahora es parte del menú inferior 
+                  //* Ya no estará aquí, ahora es parte del menú inferior
                   // MovieHorizontalListview(
                   //   movies: popularMovies,
                   //   title: "Populares",
